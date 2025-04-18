@@ -1,0 +1,11 @@
+{
+  "entryPoints": [
+    "./source/index.ts",
+    "./build/index.ts",
+  ],
+  "router": "structure",
+  "out": "docs/",
+  "plugin": [
+    "typedoc-github-theme",
+  ]
+}

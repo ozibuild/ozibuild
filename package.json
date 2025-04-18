@@ -1,0 +1,33 @@
+{
+  "name": "@ozibuild/ozibuild",
+  "version": "0.0.1",
+  "description": "Build anything with organized scripts.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "tsc",
+    "docs": "typedoc",
+    "docs:watch": "typedoc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ozibuild/ozibuild.git"
+  },
+  "keywords": [
+    "build",
+    "automate",
+    "script"
+  ],
+  "author": "\"Razvan Constantin <razvanco13@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ozibuild/ozibuild/issues"
+  },
+  "homepage": "https://github.com/ozibuild/ozibuild#readme",
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "typedoc": "^0.28.2",
+    "typedoc-github-theme": "^0.3.0",
+    "typescript": "^5.8.3"
+  }
+}
