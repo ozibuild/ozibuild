@@ -9,6 +9,10 @@
     "docs": "typedoc",
     "docs:watch": "typedoc --watch"
   },
+  "bin": {
+    "ozibuild": "bin/ozibuild",
+    "ozibuild_complete.sh": "bin/ozibuild_complete"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ozibuild/ozibuild.git"

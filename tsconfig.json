@@ -9,6 +9,9 @@
   },
   "include": [
     "source/*.ts",
+    "build/*.ts",
+    "util/*.ts",
+    "bin/*.ts"
   ],
   "exclude": [
     "**/*.test.ts"

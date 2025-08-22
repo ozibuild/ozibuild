@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+const { basename } = require('node:path');
+
+function argvAfterMain() {
+  if (process.argv.length > 0
+    && basename(process.argv[0]) === 'ozibuild') {
+    return process.argv.slice(1);
+  }
+  if (process.argv.length > 1
+    && basename(process.argv[1]) === 'ozibuild') {
+    return process.argv.slice(2);
+  }
+  return process.argv.slice(1);
+}
+
+const argv = argvAfterMain();
+
+if (argv[0] === '--complete') {
+  import('./complete.mjs').then((complete) => {
+    complete.complete(argv.slice(1));
+  });
+} else {
+  import('./cli.mjs').then((cli) => {
+    cli.run(argv);
+  });
+}

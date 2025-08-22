@@ -46,9 +46,9 @@ available as a global command line binary.
 **ozibuild** scripts are regular javascript, which exports async build functions.
 
 ```js
-// ./oribuild.mjs
-import {sourceDirContext} from '@oribuild/oribuild/source';
-import {buildCmd} from '@oribuild/oribuild/build';
+// ./ozibuild.mjs
+import {sourceDirContext} from '@ozibuild/ozibuild/source';
+import {buildCmd} from '@ozibuild/ozibuild/build';
 
 const ctx = sourceDirContext(imports.meta.dir);
 
