@@ -47,10 +47,10 @@ available as a global command line binary.
 
 ```js
 // ./ozibuild.mjs
-import {sourceDirContext} from '@ozibuild/ozibuild/source';
-import {buildCmd} from '@ozibuild/ozibuild/build';
+import {sourceDirContext} from '@ozibuild/ozibuild/source/index.js';
+import {buildCmd} from '@ozibuild/ozibuild/build/index.js';
 
-const ctx = sourceDirContext(imports.meta.dir);
+const ctx = sourceDirContext(import.meta.dirname);
 
 // Implement a build task by exporting a standard async function.
 export async function helloWorld() {

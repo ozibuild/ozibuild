@@ -7,11 +7,12 @@
     "build": "tsc",
     "prepare": "tsc",
     "docs": "typedoc",
-    "docs:watch": "typedoc --watch"
+    "docs:watch": "typedoc --watch",
+    "packed:global": "npm pack && npm install -g ozibuild-ozibuild-0.0.1.tgz"
   },
   "bin": {
     "ozibuild": "bin/ozibuild",
-    "ozibuild_complete.sh": "bin/ozibuild_complete"
+    "ozibuild_complete.sh": "bin/ozibuild_complete.sh"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,7 @@
   "keywords": [
     "build",
     "automate",
-    "script"
+    "scripting"
   ],
   "author": "\"Razvan Constantin <razvanco13@gmail.com>",
   "license": "ISC",
