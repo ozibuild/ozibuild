@@ -137,3 +137,6 @@ dist
 
 *.js
 docs/
+
+.ozibuild
+.vscode

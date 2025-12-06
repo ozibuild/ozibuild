@@ -1,0 +1,129 @@
+#!/usr/bin/env node
+
+import { basename } from 'node:path';
+import { exit, stdout } from 'node:process';
+
+import { config } from './config.mjs';
+import { make } from './make.mjs';
+import { complete } from './complete.mjs';
+import { ozibuildWatch } from './watch.mjs';
+import { appendFileSync, writeFileSync } from 'node:fs';
+
+const flags = {
+  '--help': {
+    description: 'Shows usage and exit',
+    type: 'boolean',
+    value: false
+  },
+  '--config': {
+    description: 'Path to the config file',
+    type: 'string',
+    value: ''
+  },
+  '--set': {
+    description: 'Set a config option',
+    type: 'string',
+    values: []
+  }
+};
+
+function consumeFlags(argv) {
+  const argvWithoutFlags = [];
+  let command = null;
+  for (let i = 0; i < argv.length; ++i) {
+    if (argv[i].startsWith('--') && command !== 'complete') {
+      let flag = argv[i];
+      let value = true;
+      if (flag.indexOf('=') !== -1) {
+        [flag, value] = flag.split('=');
+      } else if (flags[flag] != null && flags[flag].type !== 'boolean') {
+        value = argv[++i];
+      }
+      if (flags[flag] != null) {
+        if (flags[flag].values != null) {
+          flags[flag].values.push(value);
+        } else {
+          flags[flag].value = value;
+        }
+      } else {
+        console.error(`Unknown flag ${flag} ${value}`);
+        exit(-1);
+      }
+    } else {
+      if (command == null) {
+        command = argv[i];
+      }
+      argvWithoutFlags.push(argv[i]);
+    }
+  }
+  return argvWithoutFlags;
+}
+
+const commands = {
+  version: {
+    description: "Print version information",
+    implementation: () => {
+      stdout.write('0.0.1\n');
+    }
+  },
+  config: {
+    description: "Updates the configuration for the build hierarchy",
+    implementation: (argv) => {
+      config(flags['--config'].value, argv.concat(flags['--set'].values));
+    }
+  },
+  make: {
+    description: "Builds the specified targets",
+    implementation: (argv) => {
+      make(argv);
+    }
+  },
+  watch: {
+    description: "Continuously builds the specified targets when used files are changed",
+    implementation: (argv) => {
+      if (flags['--config'].value != null) {
+        config(flags['--config'].value, []);
+      }
+      ozibuildWatch(argv);
+    }
+  },
+  complete: {
+    description: "Provides available completions for shell completion",
+    implementation: (argv) => {
+      complete(argv);
+    }
+  },
+};
+
+
+function argvAfterMain() {
+  const selfBasename = basename(import.meta.filename);
+  const binPos = process.argv.findIndex(arg => basename(arg) === selfBasename);
+  return process.argv.slice(binPos + 1);
+}
+
+function main() {
+  const argv = consumeFlags(argvAfterMain());
+
+  if (flags['--help'].value) {
+    stdout.write('ozibuild <command> [options] <targets>\n\n');
+    for (const command in commands) {
+      stdout.write(`\t${command} - ${commands[command].description}\n`);
+    }
+    stdout.write('\n');
+    for (const flag in flags) {
+      stdout.write(`\t${flag} - ${flags[flag].description}\n`);
+    }
+    return;
+  }
+
+  let command = commands[argv[0]];
+  if (command != null) {
+    argv.shift();
+  } else {
+    command = commands.make;
+  }
+  command.implementation(argv);
+}
+
+main();

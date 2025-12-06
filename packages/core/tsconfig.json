@@ -8,12 +8,9 @@
     "noEmitOnError": true
   },
   "include": [
-    "source/*.ts",
-    "build/*.ts",
-    "util/*.ts",
-    "bin/*.ts"
+    "*.ts",
   ],
   "exclude": [
-    "**/*.test.ts"
+    "*.test.ts"
   ]
 }

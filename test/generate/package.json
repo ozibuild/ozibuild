@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "@ozibuild/core": "file:../../packages/core",
+    "@ozibuild/make": "file:../../packages/make"
+  }
+}

@@ -1,3 +1,8 @@
+---
+title: Getting Started
+group: Overview
+---
+
 # ozibuild
 
 > **WARNING**: [[Work in Progress]] ozibuild has no releases yet.
@@ -7,14 +12,19 @@
 **ozibuild** is a set of simplified functions on top of `nodejs`,
 which enables using JavaScript as a scripting language for generic builds.
 
-**ozibuild** is designed with the principle that build tasks are secondary
-to an application business logic, which implies:
-* Minimize concepts and abstractions required for build tasks.
-* Assume minimal time spent on writing build logic, and no build expertise.
-* Minimal dependencies.
+Similar to `make`, one of the core functions of **ozibuild** is to execute
+shell commands using input files to produce output(s), and only repeat the
+execution when input files change.\
+Aligned with modern javascript, output is a `Promise`, which allows representing
+natively complex dependency graphs.
 
-**ozibuild** adapts to the natural organization of source hierarchy,
-and automates repetitive commands relevant for building the application.
+Additional support provided out-of-the-box by **ozibuild** includes:
+
+*  Components for referencing source directories and files.
+*  Built-in support for watching file changes and re-running builds.
+*  Configuration management: build rules have access to json fields,
+   default config is automatically generated.
+*  Auto-complete for shell commands.
 
 ---
 
@@ -31,14 +41,18 @@ do not use javascript, npm or nodejs.
 
 #### Installation
 
-**ozibuild** is provided as an npm package:
+**ozibuild** is provided through multiple npm packages:
 
 ```sh
-npm install --save-dev @ozibuild/ozibuild
+# Install ozibuild as development dependency, for build rules implementation.
+npm install --save-dev @ozibuild/core @ozibuild/make
 ```
 
-Alternatively, **ozibuild** can be installed globally to make `ozibuild`
-available as a global command line binary.
+```sh
+# Install ozibuild binary for triggering the build functions.
+# Global installation makes the usage more convenient:
+npm install -g @ozibuild/cli
+```
 
 #### Hello, World!
 
@@ -47,8 +61,8 @@ available as a global command line binary.
 
 ```js
 // ./ozibuild.mjs
-import {sourceDirContext} from '@ozibuild/ozibuild/source/index.js';
-import {buildCmd} from '@ozibuild/ozibuild/build/index.js';
+import {sourceDirContext} from '@ozibuild/core/index.js';
+import {buildCmd} from '@ozibuild/make/index.js';
 
 const ctx = sourceDirContext(import.meta.dirname);
 
@@ -58,87 +72,83 @@ export async function helloWorld() {
 }
 ```
 
-Define the output root directory in `ozibuild.json` configuration.
+Initialize **ozibuild** root once:
 
-```json
-{
-  "outdir": "devel"
-}
+```sh
+ozibuild root .
 ```
 
 Use **ozibuild** binary to "build" the task implemented by the async function.
 
 ```sh
-# Runs the build task "helloWorld" in source directory "." 
-OZIBUILD_CONFIG=ozibuild.json npx ozibuild . helloWorld
+# Runs the build task "helloWorld" in source directory "." in either of the following
+ozibuild ./oribuild.mjs:helloWorld
+ozibuild oribuild.mjs:helloWorld
+ozibuild .:helloWorld
+ozibuild :helloWorld
+ozibuild ::all
 ```
 
-#### Next Steps
+#### root and outdir
 
-That's it: scripts, source, configuration and output, named build functions are the building blocks in **ozibuild**. Developers can organize the scripts
-as supported by nodejs imports, and **ozibuild** provides powerfull async
-functions for meaningful builds. The complexity of the build logic can grow
-with any nodejs and javascript logic, and additional npm packages.
+Root of a **ozibuild** source hierarchy is defined as the closest ancestor
+having a `.ozibuild` directory. Initialized the root with the following command:
 
-See the rest of the documentation for more insights into **ozibuild**.
+```sh
+ozibuild root .
+```
+
+Within *root* the source directory can have any structure, root is relevant for:
+
+*  having `.ozibuild` directory for logs and metadata (e.g. files checksums)
+*  replicate source hierarchy in the output directory
+*  root relative paths for source file instead recommended nodejs module imports
+*  limit source references to root hierarchy
+
+It is recommended that the *root* specification is not included in the source repository,
+and only used for building purposes.
+
+While the output of the build process can be defined in any arbitrary location,
+**ozibuild** provides support for generating files in an *outdir* hierarchy which
+mirrors the source hierarchy. The *outdir* can be specified as a flag,
+default value is `dist` sub-folder in the *root* directory:
+
+```sh
+ozibuild --outdir <dir> ...
+```
 
 ---
 
-## Source References
+## Components
 
-A fundamental requirement in build tasks is to reference source
-files and directories. **ozibuild** doesn't assume any structure of the
-source hierarchy, but requires that a source directory is referenced as a
-{@link source/SourceDirContext}, which is created by {@link source/sourceDirContext}. See {@link source} module for reference and details.
+**ozibuild** consists of the following sub-packages and concepts:
 
-## Output
+*  [`@ozibuild/core`](packages/core/README.md) - core functionality of **ozibuild**
+   *   *Source References* - accessing source files
+   *   *Configuration* - consuming user configurable options
+   *   *Output* - specifying output structure
+*  [`@ozibuild/make`](packages/make/README.md) - make like functionality,
+foundational blocks of building withing shell commands
+   *   *buildCmd* - simplified interface for running a command
+   *   *cachedCmd* - running a command with caching
+*  [`@ozibuild/cli`](packages/cli/README.md) - command line interface for running builds
+   *   *ozibuild* - main command line interface
+   *   *ozibuild --watch* - watch mode
 
-**ozibuild** defaults to a structure of output directory that has the same
-hierarchy as the source root. However, most commands would use and explicit
-output specification, which can be set or configured as needed.
+Additional packages provide useful tools and utilities for specific use cases:
 
-TODO: Provide more details on how to change output.
+*  [`@ozibuild/cpp`](packages/cpp/README.md) - minimal support for C++ builds
+*  [`@ozibuild/web`](packages/web/README.md) - (limited) support for building web applications
 
-## Configuration
+## Philosophy
 
-A common need for build tasks is to use custom parameters: prod vs devel,
-hostname, paths on the system, etc. **ozbuild** expects that final
-configurations are NOT stored along with the code, but rather provided at
-build time, through `OZIBUILD_CONFIG` environment variable.
+**ozibuild** is designed with the principle that build tasks are secondary
+to an application business logic, which implies:
+*  Minimize concepts and abstractions required for build tasks.
+*  Assume minimal time spent on writing build logic, and no build expertise.
+*  Minimal dependencies.
 
-TODO: Provide more details about configuration.
-
-## Build Commands
-
-The most common build task is to invoke a binary that takes some input(s)
-and produces some output(s). **ozibuild** provides the functions
-{@link build/cachedCmd} and {@link build/buildCmd} that should satisfy most
-of such use cases. See {@link build} module for reference and details.
-
-## Composition and Tools
-
-**ozibuild** build tasks are standard javascript async functions. They can
-invoke other async functions and have arbitrary logic,
-with any scripts structure and any additional npm packages.
-
-**ozibuild** package includes a very limited set of predefined tools,
-which are very generic and can be useful across all types of applications,
-without having dependencies. See {@link tools/file} and {@link tools/net}.
-
-**ozibuild** provides additional npm packages for specific applications
-and languages, or with additional dependencies:
-*  `@ozibuild/ozibuild-cpp` - C++ build support
-*  `@ozibuild/ozibuild-web` - Web development support (Typescript,
-Javascript, HTML).
-
-## Flags
-
-* `--config`
-* `--watch`
-* `--version`
-* `--complete`
-
-## AutoComplete
-
-## Contribute
-
+Other design principles in **ozibuild** includes:
+*  Minimal requirements on directory structure.
+*  Decouple configuration from build and provide support for customization.
+*  No assumptions on build steps, user can design any build strategy.

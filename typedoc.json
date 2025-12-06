@@ -1,8 +1,38 @@
 {
-  "entryPoints": [
-    "./source/index.ts",
-    "./build/index.ts",
+  "name": "ozibuild",
+  "readme": "about.md",
+  // "--titleLink": "https://ozibuild.org",
+  "navigationLinks": {
+    "github": "https://github.com/ozibuild/ozibuild"
+  },
+  "navigation": {
+    "includeCategories": false,
+    "includeGroups": true,
+    "includeFolders": false,
+    "compactFolders": false,
+    "excludeReferences": true
+  },
+  "categorizeByGroup": true,
+  "groupOrder": [
+    "Overview",
+    "Packages",
+    "Reference"
   ],
+  "headings": {
+    "readme": false,
+    "document": false
+  },
+  "entryPoints": [
+    "packages/core/index.ts",
+    "packages/make/index.ts",
+  ],
+  "projectDocuments": [
+    "README.md",
+    "packages/cli/README.md",
+    "packages/core/README.md",
+    "packages/make/README.md",
+  ],
+  "sortEntryPoints": false,
   "router": "structure",
   "out": "docs/",
   "plugin": [

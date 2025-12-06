@@ -1,10 +1,11 @@
 {
-  "name": "ozibuild",
+  "name": "@ozibuild/core",
   "version": "0.0.1",
   "description": "Build anything with organized scripts.",
   "main": "index.js",
   "scripts": {
-    "docs": "typedoc"
+    "build": "tsc",
+    "prepare": "tsc"
   },
   "repository": {
     "type": "git",
@@ -23,8 +24,6 @@
   "homepage": "https://github.com/ozibuild/ozibuild#readme",
   "devDependencies": {
     "@types/node": "^22.14.1",
-    "typedoc": "^0.28.2",
-    "typedoc-github-theme": "^0.3.0",
     "typescript": "^5.8.3"
   }
 }

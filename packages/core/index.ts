@@ -3,9 +3,11 @@
  * {@include ./README.md}
  *
  * @preventExpand
+ * @group Reference
  * 
  * @summary Foundation for referencing source hierarchy.
  */
-export * from './context';
-export { SourceQualifiedPath } from './qualified_path';
 export * from './root';
+export * from './context';
+export * from './caching';
+export * from './watching';

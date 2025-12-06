@@ -1,5 +1,5 @@
 import { isAbsolute, relative } from "node:path";
-import { CacheInfo } from "../build/cache";
+import { CacheInfo } from "./caching";
 
 /** Encapsulates options for logging. */
 export interface LogOptions {
