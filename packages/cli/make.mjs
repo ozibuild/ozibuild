@@ -1,7 +1,7 @@
 import { appendFileSync, existsSync, lstatSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-const SCRIPT_NAMEs = ["ozibuild", "ozibuild_root", "ozibuildroot", "ozibuild.root", "ozibuild-root"];
+const SCRIPT_NAMEs = ["ozibuild", "oziroot", "ozi-root", "ozi_root"];
 
 const SCRIPT_EXTs = ['mjs', 'cjs', 'js']
 

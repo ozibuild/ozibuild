@@ -1,4 +1,4 @@
-import { appendFileSync, existsSync, lstatSync, opendirSync, writeFileSync } from "node:fs";
+import { existsSync, lstatSync, opendirSync } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
 import { stdout } from "node:process";
 import { getExportedFunctions } from "./exported_functions.mjs";
@@ -107,17 +107,13 @@ function completeFunctions(word) {
   const prefix = (lastColon === -1) ? '' : word.substring(lastColon + 1);
   const script = resolveTargetScript(target);
   if (!script) {
-    appendFileSync('/tmp/ozibuild-complete.log', 'No script for ' + target + '\n');
     return [];
   }
   const methods = listScriptMethods(script).filter(m => m.startsWith(prefix));
-  appendFileSync('/tmp/ozibuild-complete.log', 'METHODS: ' + methods.join(' ') + '\n');
   return methods.map(method => `${target}:${method}`);
 }
 
 export async function complete(args) {
-  appendFileSync('/tmp/ozibuild-complete.log', 'IN COMPLETE: ' + args.join(' ') + '\n');
-
   const compCWord = Number.parseInt(args[0]);
   const compWords = args.slice(1);
   const word = compWords[compCWord] || '';

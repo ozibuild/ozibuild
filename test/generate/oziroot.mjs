@@ -6,11 +6,8 @@ const ctx = sourceDirContext(import.meta.dirname);
 
 export async function extendTextOut() {
   const input = await generateTextOut();
-  return cachedCmd(ctx, {
-    outfile: "out-extended.txt",
-    stdoutfile: true,
+  return cachedCmd(ctx, { file: 'out-extended.txt', stdout: true }, {
     deps: [input],
-    bin: "sed",
-    args: ["s/Sun/Galaxy/g", input]
+    cmd: ["sed", "s/Sun/Galaxy/g", input]
   })
 }

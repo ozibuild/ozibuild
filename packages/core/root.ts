@@ -5,13 +5,10 @@
 import { existsSync } from 'node:fs';
 import { dirname, join, normalize } from 'node:path';
 
-const ROOT_SCRIPTS = ['ozibuild.root', 'ozibuild-root', 'ozibuild_root', 'root'];
+const ROOT_SCRIPTS = ['oziroot', 'ozi-root', 'ozi_root'];
 const JS_EXT = ['js', 'mjs', 'cjs'];
 
 export function isRootPath(path: string) {
-  if (existsSync(join(path, '.ozibuild'))) {
-    return true;
-  }
   for (const script of ROOT_SCRIPTS) {
     for (const ext of JS_EXT) {
       if (existsSync(join(path, `${script}.${ext}`))) {

@@ -60,7 +60,7 @@ npm install -g @ozibuild/cli
 **ozibuild** scripts are regular javascript, which exports async build functions.
 
 ```js
-// ./ozibuild.mjs
+// ./oziroot.mjs
 import {sourceDirContext} from '@ozibuild/core/index.js';
 import {buildCmd} from '@ozibuild/make/index.js';
 
@@ -72,31 +72,21 @@ export async function helloWorld() {
 }
 ```
 
-Initialize **ozibuild** root once:
-
-```sh
-ozibuild root .
-```
-
 Use **ozibuild** binary to "build" the task implemented by the async function.
 
 ```sh
-# Runs the build task "helloWorld" in source directory "." in either of the following
-ozibuild ./oribuild.mjs:helloWorld
-ozibuild oribuild.mjs:helloWorld
-ozibuild .:helloWorld
+# Runs the build task "helloWorld" in oziroot.mjs script from . directory
 ozibuild :helloWorld
-ozibuild ::all
+# Alternative targets specifications:
+ozibuild ./oziroot.mjs:helloWorld
+ozibuild oziroot.mjs:helloWorld
+ozibuild .:helloWorld
 ```
 
 #### root and outdir
 
 Root of a **ozibuild** source hierarchy is defined as the closest ancestor
-having a `.ozibuild` directory. Initialized the root with the following command:
-
-```sh
-ozibuild root .
-```
+having a `oziroot.js` script.
 
 Within *root* the source directory can have any structure, root is relevant for:
 
@@ -104,9 +94,6 @@ Within *root* the source directory can have any structure, root is relevant for:
 *  replicate source hierarchy in the output directory
 *  root relative paths for source file instead recommended nodejs module imports
 *  limit source references to root hierarchy
-
-It is recommended that the *root* specification is not included in the source repository,
-and only used for building purposes.
 
 While the output of the build process can be defined in any arbitrary location,
 **ozibuild** provides support for generating files in an *outdir* hierarchy which
@@ -129,7 +116,7 @@ ozibuild --outdir <dir> ...
    *   *Output* - specifying output structure
 *  [`@ozibuild/make`](packages/make/README.md) - make like functionality,
 foundational blocks of building withing shell commands
-   *   *buildCmd* - simplified interface for running a command
+   *   *buildCmd* - simplified interface for running a command with logging and build knowledge
    *   *cachedCmd* - running a command with caching
 *  [`@ozibuild/cli`](packages/cli/README.md) - command line interface for running builds
    *   *ozibuild* - main command line interface

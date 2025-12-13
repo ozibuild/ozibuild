@@ -5,11 +5,8 @@ const ctx = sourceDirContext(import.meta.dirname);
 
 export async function generateTextOut() {
   const input = ctx.resolvePath("input.txt");
-  return cachedCmd(ctx, {
-    outfile: "out.txt",
-    stdoutfile: true,
+  return cachedCmd(ctx, { file: "out.txt", stdout: true }, {
     deps: [input],
-    bin: "sed",
-    args: ["s/World/Sun/g", input]
+    cmd: ["sed", "s/World/Sun/g", input]
   });
 }

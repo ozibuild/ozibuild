@@ -22,8 +22,8 @@ const ctx = sourceDirContext(import.meta.dirname);
 
 ### Root
 
-Root is the closest directory containing either a `.ozibuild` directory
-or a script named `ozibuild.root.js`. In the latter case, **ozibuild** creates `.ozibuild` directory.\
+Root is the closest directory containing either a script named `oziroot.js`.
+**ozibuild** creates `.ozibuild` directory.\
 The structure of the hierarchy used by **ozibuild** is relative to this `root`.
 
 It is possible to have nested roots, e.g. for separating components, for monorepos,
