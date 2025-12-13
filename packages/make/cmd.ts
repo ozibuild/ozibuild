@@ -19,7 +19,7 @@ globalThis.cmds = globalThis.cmds || {}
  * 
  * @returns a promise of the stdout content from the command run, resolved upon command completion.
  */
-async function cmd(bin: string, args: string[], options: SpawnOptions, stdin?: string): Promise<string> {
+export async function cmd(bin: string, args: string[], options: SpawnOptions, stdin?: string): Promise<string> {
   const cl = `${bin} ${(args || []).join(' ')}`;
   let p: Promise<string> = globalThis.cmds[cl];
   if (!p) {

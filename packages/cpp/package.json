@@ -1,0 +1,29 @@
+{
+  "name": "@ozibuild/cpp",
+  "version": "0.0.1",
+  "description": "Build anything with organized scripts: cpp support.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ozibuild/ozibuild.git"
+  },
+  "keywords": [
+    "build",
+    "automate",
+    "scripting"
+  ],
+  "author": "\"Razvan Constantin <razvanco13@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ozibuild/ozibuild/issues"
+  },
+  "homepage": "https://github.com/ozibuild/ozibuild#readme",
+  "devDependencies": {
+    "@ozibuild/core": "file:../../packages/core",
+    "@ozibuild/make": "file:../../packages/make"
+  }
+}
