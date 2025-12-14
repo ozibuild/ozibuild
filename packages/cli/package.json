@@ -10,6 +10,7 @@
     "ozibuild": "ozibuild",
     "ozibuild_complete.sh": "ozibuild_complete.sh"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ozibuild/ozibuild.git"
