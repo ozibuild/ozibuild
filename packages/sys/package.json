@@ -1,16 +1,12 @@
 {
-  "name": "@ozibuild/bin",
+  "name": "@ozibuild/sys",
   "version": "0.0.1",
-  "description": "Build anything with organized scripts.",
+  "description": "Build anything with organized scripts: common system utilities.",
   "main": "index.js",
   "scripts": {
-    "packed:global": "npm pack && npm install -g ozibuild-bin-0.0.1.tgz"
+    "build": "tsc",
+    "prepare": "tsc"
   },
-  "bin": {
-    "ozibuild": "ozibuild",
-    "ozibuild_complete.sh": "ozibuild_complete.sh"
-  },
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ozibuild/ozibuild.git"
@@ -26,9 +22,8 @@
     "url": "https://github.com/ozibuild/ozibuild/issues"
   },
   "homepage": "https://github.com/ozibuild/ozibuild#readme",
-  "dependencies": {
-    "acorn": "^8.15.0",
-    "acorn-walk": "^8.3.4",
-    "@ozibuild/core": "../core"
+  "devDependencies": {
+    "@ozibuild/core": "file:../core",
+    "@ozibuild/make": "file:../make"
   }
 }

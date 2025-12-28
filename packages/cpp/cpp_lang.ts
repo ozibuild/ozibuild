@@ -4,6 +4,7 @@ import { SourceDirContext } from "../core/context";
 import { cachedCmd, cacheInfo } from "../make/cache";
 import { build } from "../make/cmd";
 import { copyFileSync } from "node:fs";
+import { logOutputAction, log } from "@ozibuild/core/log";
 
 /** Represents an output cpp object. */
 export interface CppObject {
@@ -211,7 +212,7 @@ export async function cppTest(
       copyFileSync(ctx.resolvePath(d), dOut);
       dCacheInfo.save();
     }
-    console.info(`\x1b[35m${test.bin}\x1b[0m \x1b[90m#cwd: ${cwd}\x1b[0m`);
+    logOutputAction(test.bin, "testing...", { cwd });
     return build(
       ctx,
       { label: basename(test.bin) },
@@ -223,7 +224,7 @@ export async function cppTest(
         },
       },
     ).then((out) => {
-      console.info(out);
+      log(out);
       return test;
     });
   });

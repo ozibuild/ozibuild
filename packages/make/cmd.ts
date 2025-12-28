@@ -1,7 +1,7 @@
 import { SpawnOptions, spawn } from "node:child_process";
 import { prefixInfo, prefixError, PrefixProgressLog } from "../core/log";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
-import { basename, relative, join, dirname } from "node:path";
+import { basename, relative, join, dirname, isAbsolute } from "node:path";
 import { SourceDirContext } from "../core/context";
 import { createHash } from "node:crypto";
 
@@ -28,48 +28,61 @@ export async function cmd(
   const cl = `${bin} ${(args || []).join(" ")}`;
   let p: Promise<string> = globalThis.cmds[cl];
   if (!p) {
-    const prefixLogger = new PrefixProgressLog(bin);
-    prefixLogger.log((args || []).join(" "));
+    const progressLogger = new PrefixProgressLog(bin);
+    progressLogger.log((args || []).join(" "));
 
     p = new Promise((resolve, reject) => {
-      const cp = spawn(bin, args, { ...options, stdio: "pipe" });
-      if (stdin) {
-        cp.stdin.write(stdin);
-        cp.stdin.end();
-      }
-      const stdout: string[] = [];
+      try {
+        if (
+          options.cwd &&
+          !isAbsolute(bin) &&
+          existsSync(join(options.cwd as string, bin))
+        ) {
+          bin = join(options.cwd as string, bin);
+        }
+        const cp = spawn(bin, args, { ...options, stdio: "pipe" });
+        if (stdin) {
+          cp.stdin.write(stdin);
+          cp.stdin.end();
+        }
+        const stdout: string[] = [];
 
-      cp.on("error", (e) => {
-        prefixLogger.finish();
+        cp.on("error", (e) => {
+          progressLogger.finish();
+          reject(e);
+          delete globalThis.cmds[cl];
+        });
+
+        cp.stdout.on("data", (data) => {
+          const dataText = data?.toString() || "";
+          stdout.push(dataText);
+          progressLogger.log(dataText);
+        });
+
+        cp.stderr.on("data", (data) => {
+          const dataText = data?.toString() || "";
+          stdout.push(dataText);
+          progressLogger.log(dataText);
+        });
+
+        cp.on("close", (code, signal) => {
+          progressLogger.finish();
+          if (code !== 0 || signal != null) {
+            reject(
+              Error(
+                `${cp.spawnfile} exited with error ${code}${signal}\n\n\n\n${stdout.join("")}`,
+              ),
+            );
+            delete globalThis.cmds[cl];
+          }
+          resolve(stdout.join(""));
+          delete globalThis.cmds[cl];
+        });
+      } catch (e) {
+        progressLogger.finish();
         reject(e);
         delete globalThis.cmds[cl];
-      });
-
-      cp.stdout.on("data", (data) => {
-        const dataText = data?.toString() || "";
-        stdout.push(dataText);
-        prefixLogger.log(dataText);
-      });
-
-      cp.stderr.on("data", (data) => {
-        const dataText = data?.toString() || "";
-        stdout.push(dataText);
-        prefixLogger.log(dataText);
-      });
-
-      cp.on("close", (code, signal) => {
-        prefixLogger.finish();
-        if (code !== 0 || signal != null) {
-          reject(
-            Error(
-              `${cp.spawnfile} exited with error ${code}${signal}\n\n\n\n${stdout.join("")}`,
-            ),
-          );
-          delete globalThis.cmds[cl];
-        }
-        resolve(stdout.join(""));
-        delete globalThis.cmds[cl];
-      });
+      }
     });
     globalThis.cmds[cl] = p;
   }
@@ -87,14 +100,13 @@ function nullOrRelativePath(
 }
 
 function inferLogFilename(out: { file?: string; dir?: string }, cmd: string[]) {
-  const cmd_checksum = createHash("md5").update(cmd.join(" ")).digest("hex");
   if (out.file) {
-    return `${basename(out.file)}.${cmd_checksum}.log`;
+    return `${basename(out.file)}.log`;
   }
   if (out.dir) {
-    return `${basename(out.dir)}.${cmd_checksum}.log`;
+    return `${basename(out.dir)}.log`;
   }
-  return `${basename(cmd[0])}.${cmd_checksum}.log`;
+  return `${basename(cmd[0])}.log`;
 }
 
 /** Executes a "build" command, i.e. a command that has an output, in context of a source directory.
@@ -185,4 +197,42 @@ export async function build(
     );
   }
   return outfile || outdir || stdout_text || out.label || bin;
+}
+
+/** Converts an object of key-values into flags.
+ *
+ * A boolean true parameter is converted into a flag without arguments.
+ * A boolean false parameter is ignored.
+ *
+ * @param o object containing key-value flags
+ * @param delimiter the delimiter between key and value in the output args.
+ */
+export function objargs(o: any, delimiter: string = "="): string[] {
+  const args: string[] = [];
+  for (const [key, value] of Object.entries(o)) {
+    if (value === false) {
+      continue;
+    }
+    if (value === true) {
+      args.push(makeFlag(key));
+      continue;
+    }
+    let arg = makeFlag(key);
+    if (delimiter !== " " && value !== true) {
+      arg += delimiter;
+      arg += value;
+    }
+    args.push(arg);
+    if (delimiter === " " && value !== true) {
+      args.push(`${value}`);
+    }
+  }
+  return args;
+}
+
+function makeFlag(f: string): string {
+  if (f.startsWith("-")) {
+    return f;
+  }
+  return "--" + f;
 }

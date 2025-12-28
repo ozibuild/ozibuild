@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "strict": true,
+    "noEmitOnError": true,
+  },
+  "include": ["*.ts"],
+  "exclude": ["*.test.ts"],
+}

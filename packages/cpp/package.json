@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/ozibuild/ozibuild#readme",
   "devDependencies": {
-    "@ozibuild/core": "file:../../packages/core",
-    "@ozibuild/make": "file:../../packages/make"
+    "@ozibuild/core": "file:../core",
+    "@ozibuild/make": "file:../make"
   }
 }
