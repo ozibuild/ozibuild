@@ -3,6 +3,7 @@ import { SourceDirContext } from "../core/context";
 import { build, objargs } from "../make/cmd";
 import { join } from "node:path";
 import { cachedCmd } from "@ozibuild/make";
+import { requireBin } from "./syslib";
 
 export async function make(
   ctx: SourceDirContext,
@@ -16,6 +17,19 @@ export async function make(
 ): Promise<string> {
   const cwd = ctx.outputPath(true);
   const dir = params.dir;
+  if (existsSync(join(dir, "configure.ac"))) {
+    requireBin(ctx, "autoreconf");
+    requireBin(ctx, "libtool");
+    await cachedCmd(
+      ctx,
+      { file: join(dir, "configure") },
+      {
+        deps: [join(dir, "configure.ac")],
+        cmd: ["autoreconf", "-fi"],
+        cwd: dir,
+      },
+    );
+  }
   await cachedCmd(
     ctx,
     { file: join(dir, "Makefile") },
@@ -25,6 +39,7 @@ export async function make(
       cwd: dir,
     },
   );
+  requireBin(ctx, "make");
   await build(
     ctx,
     { label: `make ${name}` },

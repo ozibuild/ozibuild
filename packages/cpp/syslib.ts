@@ -1,8 +1,17 @@
 import { SpawnOptions } from "node:child_process";
 
 import { cmd } from "@ozibuild/make";
-import { SourceDirContext } from "@ozibuild/core";
+import { prefixError, SourceDirContext } from "@ozibuild/core";
 import { CppLibrary } from "./cpp_lang";
+
+export async function requireBin(ctx: SourceDirContext, tool: string) {
+  try {
+    return await cmd("which", [tool], {});
+  } catch (e) {
+    prefixError(tool, `required binary (${tool}) could not be resolved.`);
+    throw new Error(`Required binary (${tool}) could not be resolved.`);
+  }
+}
 
 export async function pkgConfig(
   ctx: SourceDirContext,
