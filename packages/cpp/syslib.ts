@@ -4,12 +4,35 @@ import { cmd } from "@ozibuild/make";
 import { prefixError, SourceDirContext } from "@ozibuild/core";
 import { CppLibrary } from "./cpp_lang";
 
-export async function requireBin(ctx: SourceDirContext, tool: string) {
+export async function requireBin(
+  ctx: SourceDirContext,
+  tool: string,
+  message?: string,
+) {
   try {
     return await cmd("which", [tool], {});
   } catch (e) {
-    prefixError(tool, `required binary (${tool}) could not be resolved.`);
+    prefixError(
+      tool,
+      `required binary (${tool}) could not be resolved: ${message || ""}`,
+    );
     throw new Error(`Required binary (${tool}) could not be resolved.`);
+  }
+}
+
+export async function requireCmd(
+  ctx: SourceDirContext,
+  args: string[],
+  message?: string,
+) {
+  try {
+    return await cmd(args[0], args.slice(1), {});
+  } catch (e) {
+    prefixError(
+      args[0],
+      `${message || "Following command should succeed"}: ${args.join(" ")}`,
+    );
+    throw new Error(`Required command failed: ${args.join(" ")}`);
   }
 }
 
