@@ -12,5 +12,3 @@ export * from "./context";
 export * from "./caching";
 export * from "./watching";
 export * from "./log";
-export * from "./build";
-export * from "./cmd";
